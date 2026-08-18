@@ -1,0 +1,76 @@
+/* Custom AG Grid Theme Overrides */
+
+.ag-theme-alpine {
+  --ag-font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ag-font-size: 12px;
+  --ag-header-height: 40px;
+  --ag-row-height: 40px;
+  --ag-border-color: #E5E7EB;
+  --ag-header-background-color: #F9FAFB;
+  --ag-odd-row-background-color: #ffffff;
+  --ag-background-color: #ffffff;
+  --ag-foreground-color: #18243E;
+  --ag-header-foreground-color: #374151;
+  --ag-row-hover-color: #F3F4F6;
+  --ag-selected-row-background-color: #EFF6FF;
+}
+
+.ag-theme-alpine .ag-header-cell {
+  font-weight: 600;
+  font-size: 11px;
+  color: #374151;
+  text-transform: none;
+}
+
+.ag-theme-alpine .ag-cell {
+  font-size: 12px;
+  color: #18243E;
+  line-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.ag-theme-alpine .ag-header {
+  border-bottom: 2px solid #E5E7EB;
+}
+
+.ag-theme-alpine .ag-row {
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.ag-theme-alpine .ag-paging-panel {
+  border-top: 1px solid #E5E7EB;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.ag-theme-alpine .ag-paging-button {
+  margin: 0 4px;
+}
+
+.ag-theme-alpine .ag-paging-page-summary-panel {
+  color: #6B7280;
+}
+
+/* Hide unnecessary grid elements */
+.ag-theme-alpine .ag-cell-focus,
+.ag-theme-alpine .ag-cell-no-focus {
+  border: none !important;
+}
+
+/* Smooth scrolling */
+.ag-theme-alpine .ag-body-viewport {
+  overflow-y: auto !important;
+}
+
+/* Custom pagination styling */
+.ag-theme-alpine .ag-paging-number,
+.ag-theme-alpine .ag-paging-button {
+  color: #374151;
+  border-color: #D1D5DB;
+}
+
+.ag-theme-alpine .ag-paging-button:disabled {
+  color: #9CA3AF;
+  cursor: not-allowed;
+}
