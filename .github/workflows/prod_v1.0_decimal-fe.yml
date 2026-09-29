@@ -35,14 +35,21 @@ jobs:
       - name: Check build output
         shell: powershell
         run: |
-          Write-Host "Build output:"
-          Get-ChildItem -Recurse dist | Select-Object FullName, Length
+          Write-Host "Checking dist folder..."
+
+          if (Test-Path "dist") {
+            Get-ChildItem -Recurse dist
+          } else {
+            Write-Error "dist folder does not exist!"
+            exit 1
+          }
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: dist
+          if-no-files-found: error
 
   deploy:
     runs-on: ubuntu-latest
@@ -58,6 +65,11 @@ jobs:
         with:
           name: node-app
 
+      - name: Show downloaded files
+        run: |
+          echo "Downloaded files:"
+          find . -maxdepth 3 -type f | head -100
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -67,7 +79,6 @@ jobs:
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
           app-name: 'decimal-fe'
           slot-name: 'Production'
