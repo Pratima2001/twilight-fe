@@ -28,26 +28,32 @@ jobs:
 
       - name: Build application
         run: npm run build
+        env:                                                       # ← added
+          NEXT_PUBLIC_API_URL: https://api-decimal-prod-ayaaenaqg4dkfah2.australiaeast-01.azurewebsites.net
 
       - name: Prepare standalone files
         shell: powershell
         run: |
           Write-Host "Preparing standalone folder for Azure..."
-          
+
           if (!(Test-Path ".next/standalone")) {
               Write-Error "Standalone folder does not exist. Make sure output: 'standalone' is set in next.config.js"
               exit 1
           }
 
-          # Copy public folder into standalone directory
           if (Test-Path "public") {
               Copy-Item -Recurse -Force "public" ".next/standalone/public"
           }
 
-          # Copy static files into standalone directory
           if (Test-Path ".next/static") {
-              New-Item -ItemType Directory -Force -Path ".next/standalone/.next/static"
+              New-Item -ItemType Directory -Force -Path ".next/standalone/.next/static" | Out-Null
               Copy-Item -Recurse -Force ".next/static/*" ".next/standalone/.next/static/"
+          }
+
+          # Sanity check: the server build must be present          # ← added
+          if (!(Test-Path ".next/standalone/.next/BUILD_ID")) {
+              Write-Error ".next/standalone/.next is incomplete"
+              exit 1
           }
 
       - name: Upload build artifact
@@ -55,6 +61,7 @@ jobs:
         with:
           name: node-app
           path: .next/standalone
+          include-hidden-files: true                               # ← added (keeps .next)
           if-no-files-found: error
 
   deploy:
@@ -73,8 +80,9 @@ jobs:
 
       - name: Show downloaded files
         run: |
-          echo "Downloaded files:"
-          find . -maxdepth 3 -type f | head -100
+          echo "Top level:"
+          ls -la                                                   # ← changed (shows .next)
+          test -f .next/BUILD_ID && echo ".next OK" || (echo ".next MISSING" && exit 1)
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -89,3 +97,4 @@ jobs:
           app-name: 'decimal-fe'
           slot-name: 'Production'
           package: .
+          clean: true                                              # ← added
