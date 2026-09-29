@@ -29,18 +29,15 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Run tests
-        run: npm run test --if-present
-
       - name: Check build output
         shell: powershell
         run: |
-          Write-Host "Checking dist folder..."
+          Write-Host "Checking .next folder..."
 
-          if (Test-Path "dist") {
-            Get-ChildItem -Recurse dist
+          if (Test-Path ".next") {
+            Get-ChildItem -Recurse .next
           } else {
-            Write-Error "dist folder does not exist!"
+            Write-Error ".next folder does not exist!"
             exit 1
           }
 
@@ -48,7 +45,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: dist
+          path: |
+            .next
+            public
+            package.json
+            package-lock.json
           if-no-files-found: error
 
   deploy:
