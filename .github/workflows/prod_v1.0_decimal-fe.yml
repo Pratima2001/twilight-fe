@@ -29,27 +29,32 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Check build output
+      - name: Prepare standalone files
         shell: powershell
         run: |
-          Write-Host "Checking .next folder..."
+          Write-Host "Preparing standalone folder for Azure..."
+          
+          if (!(Test-Path ".next/standalone")) {
+              Write-Error "Standalone folder does not exist. Make sure output: 'standalone' is set in next.config.js"
+              exit 1
+          }
 
-          if (Test-Path ".next") {
-            Get-ChildItem -Recurse .next
-          } else {
-            Write-Error ".next folder does not exist!"
-            exit 1
+          # Copy public folder into standalone directory
+          if (Test-Path "public") {
+              Copy-Item -Recurse -Force "public" ".next/standalone/public"
+          }
+
+          # Copy static files into standalone directory
+          if (Test-Path ".next/static") {
+              New-Item -ItemType Directory -Force -Path ".next/standalone/.next/static"
+              Copy-Item -Recurse -Force ".next/static/*" ".next/standalone/.next/static/"
           }
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: |
-            .next
-            public
-            package.json
-            package-lock.json
+          path: .next/standalone
           if-no-files-found: error
 
   deploy:
